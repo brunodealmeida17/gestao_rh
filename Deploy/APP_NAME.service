@@ -1,0 +1,12 @@
+[Unit]
+Description=Gunicorn daemon for APP_NAME Application
+After=network.target
+
+[Service]
+User=APP_NAME
+Group=APP_NAME
+WorkingDirectory=APP_PWD/src
+ExecStart=APP_PWD/env/bin/gunicorn -c APP_PWD/src/gunicorn_conf.py APP_NAME.asgi:application
+
+[Install]
+WantedBy=multi-user.target

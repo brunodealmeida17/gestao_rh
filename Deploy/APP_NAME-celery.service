@@ -1,0 +1,25 @@
+[Unit]
+Description=Celery Daemon for APP_NAME Tools Application
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=forking
+User=APP_NAME
+Group=APP_NAME
+EnvironmentFile=APP_PWD/APP_NAME-celery.env
+WorkingDirectory=APP_PWD/src
+ExecStart=/bin/sh -c '${CELERY_BIN} -A $CELERY_APP multi start $CELERYD_NODES \
+    --pidfile=${CELERYD_PID_FILE} --logfile=${CELERYD_LOG_FILE} \
+    --loglevel="${CELERYD_LOG_LEVEL}" $CELERYD_OPTS'
+ExecStop=/bin/sh -c '${CELERY_BIN} multi stopwait $CELERYD_NODES \
+    --pidfile=${CELERYD_PID_FILE} --logfile=${CELERYD_LOG_FILE} \
+    --loglevel="${CELERYD_LOG_LEVEL}"'
+ExecReload=/bin/sh -c '${CELERY_BIN} -A $CELERY_APP multi restart $CELERYD_NODES \
+    --pidfile=${CELERYD_PID_FILE} --logfile=${CELERYD_LOG_FILE} \
+    --loglevel="${CELERYD_LOG_LEVEL}" $CELERYD_OPTS'
+SyslogIdentifier=app_celery
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
